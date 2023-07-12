@@ -2,7 +2,7 @@
 #define UTILITIES_H
 
 #include "cppTypes.h"
-#include "GPIO.h"
+// #include "GPIO.h"
 #include "actuator.h"
 
 #define CONTACT_PIN 13
@@ -40,9 +40,9 @@ Vec3<double> rbdl2robot_vel(double v1, double v2, double v3){
     return fixq3(diff - rx_dot);
 }
 
-bool detect_contact(){
-    return GPIO::input(CONTACT_PIN);
-}
+// bool detect_contact(){
+//     return GPIO::input(CONTACT_PIN);
+// }
 
 Vec3<double> cal_qdot(Vec3<double> q_pre, Vec3<double> q, double t_pre,double  t_now){
     return ((q - q_pre) / (t_now - t_pre));
