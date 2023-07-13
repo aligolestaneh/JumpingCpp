@@ -126,8 +126,8 @@ int main() {
             tpre = std::time(nullptr);
         }
     }
-    Vec3<double> final_pose_motor, final_pos_rbdl;
-    final_pose_motor[0] = _rx[1];
+    Vec3<double> final_pos_motor, final_pos_rbdl;
+    final_pos_motor[0] = _rx[1];
     final_pos_rbdl[0] = robot2rbdl(_rx[1], 0, 0, q_home)[0];
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -141,7 +141,7 @@ int main() {
         dr = 0.02;
 
     pos.clear();
-    for (double p = q_rbdl[0]; p < q_d_rbdl[0]; p += dr)
+    for (double p = q_rbdl[2]; p < q_d_rbdl[2]; p += dr)
         pos.push_back(p);
 
     dt = 1.0 / pos.size();
@@ -178,10 +178,65 @@ int main() {
             tpre = std::time(nullptr);
         }
     }
-    final_pose_motor[2] = _rx[1];
+    final_pos_motor[2] = _rx[1];
     final_pos_rbdl[2] = robot2rbdl(0, 0, _rx[1], q_home)[2];
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    /* //////////////////////////////////
+    Starting initial positioning of THIGH
+    ////////////////////////////////// */
+    if (q_rbdl[1] > q_d_rbdl[1])
+        dr = -0.02;
+    else
+        dr = 0.02;
+
+    pos.clear();
+    for (double p = q_rbdl[1]; p < q_d_rbdl[1]; p += dr)
+        pos.push_back(p);
+
+    dt = 1.0 / pos.size();
+    tpre = std::time(nullptr);
+
+    std::cout << "THIGH:";
+    for (const double& value : pos)
+        std::cout << " " << value;
+    std::cout << std::endl;
+
+    q_pre = rx[1][1];
+    for (const double& p : pos){
+        Vec3<double> p_robot = rbdl2robot(0, p, 0, q_home);
+        double diff = std::abs(q_pre - p_robot[1]);
+        if (diff > 0.1) {
+            std::cout << "diff: " << diff << std::endl;
+
+            // Perform necessary actions in case of unsafe command to motors detected
+            leg.command(m1, 0, 0, 0, 0, 0);
+            leg.command(m2, 0, 0, 0, 0, 0);
+            leg.command(m3, 0, 0, 0, 0, 0);
+            leg.disable(m1, false);
+            leg.disable(m2, false);
+            leg.disable(m3, false);
+            std::cout << "Unsafe command to motors is detected!" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            throw std::runtime_error("Unsafe command to motors is detected!");
+        } else {
+            _rx = leg.command(m2, p_robot[1], 0, kp, kd, 0);
+            q_pre = _rx[1];
+
+            while (std::time(nullptr) - tpre < dt)
+                int temp = 0;
+            tpre = std::time(nullptr);
+        }
+    }
+    final_pos_motor[1] = _rx[1];
+    final_pos_rbdl[1] = robot2rbdl(0, _rx[1], 0, q_home)[2];
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "==================================================";
+    std::cout << "Final position of motors:" << final_pos_motor << std::endl;
+    std::cout << "Final position in RBDL:" << final_pos_rbdl << std::endl;
 
 
     return 0;
