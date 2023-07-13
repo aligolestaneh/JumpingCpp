@@ -100,7 +100,7 @@ int main() {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
     float q_pre = rx[0][1];
-
+    float* _rx;
     for (const double& p : pos){
         Vec3<double> p_robot = rbdl2robot(p, 0, 0, q_home);
         double diff = std::abs(q_pre - p_robot[0]);
@@ -118,19 +118,20 @@ int main() {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             throw std::runtime_error("Unsafe command to motors is detected!");
         } else {
-            float* _rx = leg.command(m1, p_robot[0], 0, kp, kd, 0);
+            _rx = leg.command(m1, p_robot[0], 0, kp, kd, 0);
             q_pre = _rx[1];
 
             while (std::time(nullptr) - tpre < dt)
                 int temp = 0;
 
             tpre = std::time(nullptr);
-
-            // Your code inside the else block
-            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-
     }
+    Vec3<double> final_pose_motor, final_pos_rbdl;
+    final_pose_motor[0] = _rx[1];
+    final_pos_rbdl[0] = robot2rbdl(_rx[1], 0, 0, q_home)[0];
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     /*
     Starting initial positioning of CALF
