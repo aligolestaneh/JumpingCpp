@@ -76,9 +76,9 @@ int main() {
     Vec3<double> home_robot_q = {rx[0][1], rx[1][1], rx[2][1]};
     Vec3<double> q_d_rbdl = {0.032, 1.201, -1.819};
 
-    /*
+    /* ////////////////////////////////
     Starting initial positioning of HIP
-    */
+    //////////////////////////////// */
     double dr;
     if (q_rbdl[0] > q_d_rbdl[0])
         dr = -0.02;
@@ -123,7 +123,6 @@ int main() {
 
             while (std::time(nullptr) - tpre < dt)
                 int temp = 0;
-
             tpre = std::time(nullptr);
         }
     }
@@ -133,9 +132,56 @@ int main() {
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    /*
+    /* /////////////////////////////////
     Starting initial positioning of CALF
-    */
+    ///////////////////////////////// */
+    if (q_rbdl[2] > q_d_rbdl[2])
+        dr = -0.02;
+    else
+        dr = 0.02;
+
+    pos.clear();
+    for (double p = q_rbdl[0]; p < q_d_rbdl[0]; p += dr)
+        pos.push_back(p);
+
+    dt = 1.0 / pos.size();
+    tpre = std::time(nullptr);
+
+    std::cout << "CALF:";
+    for (const double& value : pos)
+        std::cout << " " << value;
+    std::cout << std::endl;
+
+    q_pre = rx[2][1];
+    for (const double& p : pos){
+        Vec3<double> p_robot = rbdl2robot(0, 0, p, q_home);
+        double diff = std::abs(q_pre - p_robot[2]);
+        if (diff > 0.12) {
+            std::cout << "diff: " << diff << std::endl;
+
+            // Perform necessary actions in case of unsafe command to motors detected
+            leg.command(m1, 0, 0, 0, 0, 0);
+            leg.command(m2, 0, 0, 0, 0, 0);
+            leg.command(m3, 0, 0, 0, 0, 0);
+            leg.disable(m1, false);
+            leg.disable(m2, false);
+            leg.disable(m3, false);
+            std::cout << "Unsafe command to motors is detected!" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            throw std::runtime_error("Unsafe command to motors is detected!");
+        } else {
+            _rx = leg.command(m3, p_robot[2], 0, kp, kd, 0);
+            q_pre = _rx[1];
+
+            while (std::time(nullptr) - tpre < dt)
+                int temp = 0;
+            tpre = std::time(nullptr);
+        }
+    }
+    final_pose_motor[2] = _rx[1];
+    final_pos_rbdl[2] = robot2rbdl(0, 0, _rx[1], q_home)[2];
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
 
     return 0;
