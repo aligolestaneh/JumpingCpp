@@ -238,6 +238,7 @@ int main() {
     std::cout << "Final position of motors:" << final_pos_motor << std::endl;
     std::cout << "Final position in RBDL:" << final_pos_rbdl << std::endl;
 
+    
 
     return 0;
 }

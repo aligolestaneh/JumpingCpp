@@ -10,6 +10,4 @@ class Hardware{
     double qh1, qh2, qh3;
 };
 
-
-
 #endif
