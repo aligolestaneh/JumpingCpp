@@ -10,22 +10,20 @@ find_package(Eigen3 REQUIRED)
 # find_package(yaml-cpp REQUIRED)
 
 # include_directories("/usr/local/include/lcm/")
-include_directories("/usr/local/include/eigen3/")
 # include_directories("/usr/include/yaml-cpp")
+
+include_directories("/usr/local/include/eigen3/")
+# include_directories("/usr/include/eigen3/")		//for raspberry
 
 
 add_library(extract_data SHARED extract_data.h extract_data.cpp)
 add_library(actuator SHARED actuator.h actuator.cpp)
 add_library(homing SHARED homing.h homing.cpp)
-target_link_libraries(homing actuator)
 
-# add_library(test SHARED test.cpp)
+target_link_libraries(homing actuator)
 
 add_executable(main main.cpp)
 target_link_libraries(main homing extract_data)
 
-# target_link_libraries(test ${YAML_LIBRARY})
-
 # Create the main executable
 
-# target_link_libraries(hopping_for_new_robot PUBLIC extract_data)

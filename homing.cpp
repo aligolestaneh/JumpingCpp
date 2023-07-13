@@ -157,7 +157,7 @@ float *Homing::start(int m1, int m2, int m3, float kp, float kd, bool enable_mot
             }
             tpre = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
         }
-        this_thread::sleep_for(chrono::milliseconds(200));
+        this_thread::sleep_for(chrono::milliseconds(400));
     }
 
     ////////////////////////// Motor 2 ////////////////////////////

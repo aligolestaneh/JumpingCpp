@@ -188,12 +188,12 @@ float *Actuator::command(int id, double p_d, double v_d, double kp, double kd, d
     frame.data[7] = data[7];
 
     int nbytes = write(this->s, &frame, sizeof(struct can_frame));
-    this_thread::sleep_for(chrono::milliseconds(10));
+    //this_thread::sleep_for(chrono::milliseconds(10));
     if (nbytes != sizeof(frame))
     {
         printf("Send Error frame[0]!\r\n");
     }
-    this_thread::sleep_for(chrono::milliseconds(10));
+    //this_thread::sleep_for(chrono::milliseconds(10));
     delete[] data;
     float *result = this->__unpack(id);
     // delete allocated memory

@@ -58,18 +58,19 @@ int main() {
     /*
     Find the safe range during slip commands from data
     */
-    std::vector<double> hip_d_robot, thigh_d_robot, calf_d_robot;
+    Vec78<double> hip_d_robot, thigh_d_robot, calf_d_robot;
+    //std::vector<double> hip_d_robot, thigh_d_robot, calf_d_robot;
     for(int i(0); i < 78; i++){
-        hip_d_robot.push_back(rbdl2robot(JumpData.get_pose_data_f(0)[i], 0, 0, q_home)[0]);
-        thigh_d_robot.push_back(rbdl2robot(0, JumpData.get_pose_data_f(1)[i], 0, q_home)[1]);
-        calf_d_robot.push_back(rbdl2robot(0, 0, JumpData.get_pose_data_f(2)[i], q_home)[2]);
+        hip_d_robot[i] = rbdl2robot(JumpData.get_pose_data_f(0)[i], 0, 0, q_home)[0];
+        thigh_d_robot[i] = rbdl2robot(0, JumpData.get_pose_data_f(1)[i], 0, q_home)[1];
+        calf_d_robot[i] = rbdl2robot(0, 0, JumpData.get_pose_data_f(2)[i], q_home)[2];
     }
-    double min_hip = *(std::min_element(hip_d_robot.begin(), hip_d_robot.end()));
-    double max_hip = *(std::max_element(hip_d_robot.begin(), hip_d_robot.end()));
-    double min_thigh = *(std::min_element(thigh_d_robot.begin(), thigh_d_robot.end()));
-    double max_thigh = *(std::max_element(thigh_d_robot.begin(), thigh_d_robot.end()));
-    double min_calf = *(std::min_element(calf_d_robot.begin(), calf_d_robot.end()));
-    double max_calf = *(std::max_element(calf_d_robot.begin(), calf_d_robot.end()));
+    double min_hip = hip_d_robot.minCoeff();
+    double max_hip = hip_d_robot.maxCoeff();
+    double min_thigh = thigh_d_robot.minCoeff();
+    double max_thigh = thigh_d_robot.maxCoeff();
+    double min_calf = calf_d_robot.minCoeff();
+    double max_calf = calf_d_robot.maxCoeff();
 
     Vec3<double> q_rbdl = robot2rbdl(rx[0][1], rx[1][1], rx[2][1], q_home);
     Vec3<double> home_robot_q = {rx[0][1], rx[1][1], rx[2][1]};
@@ -127,7 +128,7 @@ int main() {
 
             // Your code inside the else block
             std::this_thread::sleep_for(std::chrono::seconds(1));
-        }       
+        }
 
     }
 
