@@ -1,8 +1,10 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#include <iostream>
+
 #include "cppTypes.h"
-// #include "GPIO.h"
+#include "GPIO.h"
 #include "actuator.h"
 
 #define CONTACT_PIN 13

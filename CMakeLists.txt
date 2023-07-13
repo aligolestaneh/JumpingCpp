@@ -12,6 +12,7 @@ find_package(Eigen3 REQUIRED)
 # include_directories("/usr/local/include/lcm/")
 # include_directories("/usr/include/yaml-cpp")
 
+include_directories("/usr/include/")
 include_directories("/usr/local/include/eigen3/")
 # include_directories("/usr/include/eigen3/")		//for raspberry
 
@@ -19,7 +20,10 @@ include_directories("/usr/local/include/eigen3/")
 add_library(extract_data SHARED extract_data.h extract_data.cpp)
 add_library(actuator SHARED actuator.h actuator.cpp)
 add_library(homing SHARED homing.h homing.cpp)
+# add_library(utilities SHARED utilities.h)
+# add_library(GPIO SHARED /usr/include/GPIO.h)
 
+# target_link_libraries(utilities GPIO)
 target_link_libraries(homing actuator)
 
 add_executable(main main.cpp)

@@ -5,21 +5,15 @@ Created: Jul. 5, 2023
 This code makes robot jump for many times as wanted.
 */
 
-#include <iostream>
-#include <string>
-#include <vector>
 #include <cmath>
-#include <ctime>
 #include <unistd.h>
 #include <algorithm>
 #include <chrono>
 #include <thread>
 
 #include "homing.h"
-#include "extract_data.h"
 #include "utilities.h"
 #include "robot_class.h"
-#include "hardware.h"
 #include "control.h"
 
 int main() {
@@ -238,7 +232,7 @@ int main() {
     std::cout << "Final position of motors:" << final_pos_motor << std::endl;
     std::cout << "Final position in RBDL:" << final_pos_rbdl << std::endl;
 
-    
+
 
     return 0;
 }
