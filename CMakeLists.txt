@@ -18,6 +18,7 @@ include_directories("/usr/local/include/eigen3/")
 
 
 add_library(extract_data SHARED extract_data.h extract_data.cpp)
+add_library(control SHARED control.h control.cpp)
 add_library(actuator SHARED actuator.h actuator.cpp)
 add_library(homing SHARED homing.h homing.cpp)
 # add_library(utilities SHARED utilities.h)
@@ -27,7 +28,7 @@ add_library(homing SHARED homing.h homing.cpp)
 target_link_libraries(homing actuator)
 
 add_executable(main main.cpp)
-target_link_libraries(main homing extract_data)
+target_link_libraries(main homing extract_data control)
 
 # Create the main executable
 

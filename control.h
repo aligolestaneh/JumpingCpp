@@ -25,7 +25,6 @@ class Control {
     }
     void data_for_jump();
 
-    private:
     int _m1, _m2, _m3;
     Hardware _hw;
     Data data;
