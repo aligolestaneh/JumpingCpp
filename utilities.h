@@ -13,12 +13,12 @@
 #define m3 0x05
 
 Vec3<double> fixq3(Vec3<double> q){
-    q[2] = q[2] * (18./28);
+    q[2] = q[2] * (18./28.);
     return q;
 }
 
 Vec3<double> fixq3inv(Vec3<double> q){
-    q[2] = q[2] * (28./18);
+    q[2] = q[2] * (28./18.);
     return q;
 }
 
