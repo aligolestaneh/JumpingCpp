@@ -233,6 +233,50 @@ int main() {
     std::cout << "Final position in RBDL:" << final_pos_rbdl << std::endl;
 
 
+    Hardware hardware(q_home[0], q_home[1], q_home[2]);
+    int counter = 1;
+
+    std::chrono::steady_clock::time_point t_first_cycle = std::chrono::steady_clock::now();
+    double real_time_cycle = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first_cycle).count();
+    Vec78<double> real_time_cycle_list, data_cycle, contact_list_cycle;
+
+    // Part1 lists
+    Vec78<double> q_hip_com_1, q_thigh_com_1, q_calf_com_1;
+    Vec78<double> q_hip_motor_1, q_thigh_motor_1, q_calf_motor_1;
+    Vec78<double> real_time_list_1;
+
+    //Part3 lists
+    Vec78<double> q_hip_com_3, q_thigh_com_3, q_calf_com_3;
+    Vec78<double> q_hip_motor_3, q_thigh_motor_3, q_calf_motor_3;
+
+    Control control(hardware, m1, m2, m3);
+    /*
+    std::string path = "leg_RBDL.urdf"
+    Robot robot([0, 0, 0], [0, 0, 0], path)     //Model
+    */
+    int data_counter = 0;
+    int num = 0;
+    control.data_for_jump();
+
+    std::this_thread::sleep_for(std::chrono::seconds(20));
+
+    /* //////////////////////////////////
+    /////////// START HOPPING ///////////
+    ////////////////////////////////// */
+    kp = 90;
+    kd = 0.3;
+    dt = 0.003;
+    int first_check;
+
+    while (counter <= 1)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        first_check = 0;
+
+    }
+    
+
+
 
     return 0;
 }

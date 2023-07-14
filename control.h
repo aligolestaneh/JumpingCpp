@@ -14,8 +14,8 @@
 
 class Control {
     public:
-    Control(Hardware hardware, Actuator m_1, Actuator m_2, Actuator m_3)
-        : _m1(m_1), _m2(m_2), _m3(m_3), hw(hardware){
+    Control(Hardware hw, int m_1, int m_2, int m_3)
+        : _m1(m_1), _m2(m_2), _m3(m_3), _hw(hw){
         hip_d = data.get_pose_data_f(0);
         thigh_d = data.get_pose_data_f(1);
         calf_d = data. get_pose_data_f(2);
@@ -24,10 +24,10 @@ class Control {
         calf_vel_d = data.get_vel_data_f(2);
     }
     void data_for_jump();
-    
+
     private:
-    Actuator _m1, _m2, _m3;
-    Hardware hw;
+    int _m1, _m2, _m3;
+    Hardware _hw;
     Data data;
     Vec78<double> hip_d;
     Vec78<double> thigh_d;
@@ -41,7 +41,6 @@ class Control {
     Vec78<double> hip_vel_d_robot;
     Vec78<double> thigh_vel_d_robot;
     Vec78<double> calf_vel_d_robot;
-
 };
 
 
