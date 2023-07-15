@@ -90,7 +90,7 @@ int main() {
     std::cout << "HIP:";
     for (const double& value : pos)
         std::cout << " " << value;
-    std::cout << std::endl;
+    std::cout << "\n";
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
@@ -100,7 +100,7 @@ int main() {
         Vec3<double> p_robot = rbdl2robot(p, 0, 0, q_home);
         double diff = std::abs(q_pre - p_robot[0]);
         if (diff > 0.1) {
-            std::cout << "diff: " << diff << std::endl;
+            std::cout << "diff: " << diff << '\n';
 
             // Perform necessary actions in case of unsafe command to motors detected
             leg.command(m1, 0, 0, 0, 0, 0);
@@ -109,7 +109,7 @@ int main() {
             leg.disable(m1, false);
             leg.disable(m2, false);
             leg.disable(m3, false);
-            std::cout << "Unsafe command to motors is detected!" << std::endl;
+            std::cout << "Unsafe command to motors is detected!" << '\n';
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             throw std::runtime_error("Unsafe command to motors is detected!");
         } else {
@@ -145,14 +145,14 @@ int main() {
     std::cout << "CALF:";
     for (const double& value : pos)
         std::cout << " " << value;
-    std::cout << std::endl;
+    std::cout << '\n';
 
     q_pre = rx[2][1];
     for (const double& p : pos){
         Vec3<double> p_robot = rbdl2robot(0, 0, p, q_home);
         double diff = std::abs(q_pre - p_robot[2]);
         if (diff > 0.12) {
-            std::cout << "diff: " << diff << std::endl;
+            std::cout << "diff: " << diff << '\n';
 
             // Perform necessary actions in case of unsafe command to motors detected
             leg.command(m1, 0, 0, 0, 0, 0);
@@ -161,7 +161,7 @@ int main() {
             leg.disable(m1, false);
             leg.disable(m2, false);
             leg.disable(m3, false);
-            std::cout << "Unsafe command to motors is detected!" << std::endl;
+            std::cout << "Unsafe command to motors is detected!\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             throw std::runtime_error("Unsafe command to motors is detected!");
         } else {
@@ -196,14 +196,14 @@ int main() {
     std::cout << "THIGH:";
     for (const double& value : pos)
         std::cout << " " << value;
-    std::cout << std::endl;
+    std::cout << '\n';
 
     q_pre = rx[1][1];
     for (const double& p : pos){
         Vec3<double> p_robot = rbdl2robot(0, p, 0, q_home);
         double diff = std::abs(q_pre - p_robot[1]);
         if (diff > 0.1) {
-            std::cout << "diff: " << diff << std::endl;
+            std::cout << "diff: " << diff << '\n';
 
             // Perform necessary actions in case of unsafe command to motors detected
             leg.command(m1, 0, 0, 0, 0, 0);
@@ -212,7 +212,7 @@ int main() {
             leg.disable(m1, false);
             leg.disable(m2, false);
             leg.disable(m3, false);
-            std::cout << "Unsafe command to motors is detected!" << std::endl;
+            std::cout << "Unsafe command to motors is detected!\n";
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             throw std::runtime_error("Unsafe command to motors is detected!");
         } else {
@@ -230,8 +230,8 @@ int main() {
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
     std::cout << "==================================================";
-    std::cout << "Final position of motors:" << final_pos_motor << std::endl;
-    std::cout << "Final position in RBDL:" << final_pos_rbdl << std::endl;
+    std::cout << "Final position of motors:" << final_pos_motor << '\n';
+    std::cout << "Final position in RBDL:" << final_pos_rbdl << '\n';
 
 
     Hardware hardware(q_home[0], q_home[1], q_home[2]);
@@ -293,36 +293,36 @@ int main() {
             robot_calf_vel = control.calf_vel_d_robot[i];
 
             if (!((min_hip - 0.1 < robot_hip) && (robot_hip < max_hip + 0.1))){
-                std::cout << "Hip: " << robot_hip << std::endl;
+                std::cout << "Hip: " << robot_hip << '\n';
                 rx[0] = leg.command(m1, 0, 0, 0, 0, 0);
                 rx[1] = leg.command(m2, 0, 0, 0, 0, 0);
                 rx[2] = leg.command(m3, 0, 0, 0, 0, 0);
                 leg.disable(m1, false);
                 leg.disable(m2, false);
                 leg.disable(m3, false);
-                std::cout << "Unsafe command to motors is detected!!!!!!!!!!" << std::endl;
+                std::cout << "Unsafe command to motors is detected!!!!!!!!!!\n";
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 throw std::runtime_error("Your command position is not in the safe range!!!!!!!!!");
             } else if (!((min_thigh - 0.1 < robot_thigh) && (robot_thigh < max_thigh + 0.1))){
-                std::cout << "Thigh: " << robot_thigh << std::endl;
+                std::cout << "Thigh: " << robot_thigh << '\n';
                 rx[0] = leg.command(m1, 0, 0, 0, 0, 0);
                 rx[1] = leg.command(m2, 0, 0, 0, 0, 0);
                 rx[2] = leg.command(m3, 0, 0, 0, 0, 0);
                 leg.disable(m1, false);
                 leg.disable(m2, false);
                 leg.disable(m3, false);
-                std::cout << "Unsafe command to motors is detected!!!!!!!!!!" << std::endl;
+                std::cout << "Unsafe command to motors is detected!!!!!!!!!!\n";
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 throw std::runtime_error("Your command position is not in the safe range!!!!!!!!!");
             } else if (!((min_calf - 0.1 < robot_calf) && (robot_calf < max_calf + 0.1))){
-                std::cout << "Calf " << robot_calf << std::endl;
+                std::cout << "Calf " << robot_calf << '\n';
                 rx[0] = leg.command(m1, 0, 0, 0, 0, 0);
                 rx[1] = leg.command(m2, 0, 0, 0, 0, 0);
                 rx[2] = leg.command(m3, 0, 0, 0, 0, 0);
                 leg.disable(m1, false);
                 leg.disable(m2, false);
                 leg.disable(m3, false);
-                std::cout << "Unsafe command to motors is detected!!!!!!!!!!" << std::endl;
+                std::cout << "Unsafe command to motors is detected!!!!!!!!!!\n";
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 throw std::runtime_error("Your command position is not in the safe range!!!!!!!!!");
             } else {
