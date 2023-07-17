@@ -10,7 +10,7 @@
 #include "robot_class.h"
 #include "hardware.h"
 #include "cubic.h"
-#include "GPIO.h"
+//#include "GPIO.h"
 
 class Control {
     public:

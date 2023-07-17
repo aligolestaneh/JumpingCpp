@@ -13,23 +13,23 @@
 #define m3 0x05
 
 Vec3<double> fixq3(Vec3<double> q){
-    q[2] = q[2] * (18./28.);
+    q[2] = q[2] * (18. / 28.);
     return q;
 }
 
 Vec3<double> fixq3inv(Vec3<double> q){
-    q[2] = q[2] * (28./18.);
+    q[2] = q[2] * (28. / 18.);
     return q;
 }
 
 Vec3<double> robot2rbdl(double p1, double p2, double p3, float* q_home){
-    Vec3<double> q = {-(p1 - q_home[0]), -(p2 - q_home[1]), -(p3 - q_home[2])};
+    Vec3<double> q = {-p1 + *q_home, -p2 + *(q_home + 1), -p3 + *(q_home + 2)};
     return fixq3(q);
 }
 
 Vec3<double> rbdl2robot(double p1, double p2, double p3, float* q_home){
     Vec3<double> p = fixq3inv({p1, p2, p3});
-    return {q_home[0] - p[0], q_home[1] - p[1], q_home[2] - p[2]};
+    return {*q_home - p[0], *(q_home + 1) - p[1], *(q_home + 2) - p[2]};
 }
 
 Vec3<double> robot2rbdl_vel(double v1, double v2, double v3){

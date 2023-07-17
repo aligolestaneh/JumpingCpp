@@ -54,8 +54,8 @@ Vec316<double> Data::get_pose_data(int link){
                 return hip;
                 break;
         case 1:
-              return thigh;
-              break;
+                return thigh;
+                break;
         case 2:
                 return calf;
                 break;
@@ -68,8 +68,8 @@ Vec316<double> Data::get_vel_data(int link){
                 return hip_vel;
                 break;
         case 1:
-              return thigh_vel;
-              break;
+                return thigh_vel;
+                break;
         case 2:
                 return calf_vel;
                 break;
@@ -82,8 +82,8 @@ Vec78<double> Data::get_pose_data_f(int link){
                 return hip_f;
                 break;
         case 1:
-              return thigh_f;
-              break;
+                return thigh_f;
+                break;
         case 2:
                 return calf_f;
                 break;
@@ -95,8 +95,8 @@ Vec78<double> Data::get_vel_data_f(int link){
                 return hip_f_vel;
                 break;
         case 1:
-              return thigh_f_vel;
-              break;
+                return thigh_f_vel;
+                break;
         case 2:
                 return calf_f_vel;
                 break;

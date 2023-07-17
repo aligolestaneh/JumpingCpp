@@ -145,7 +145,7 @@ float *Homing::start(int m1, int m2, int m3, float kp, float kd, bool enable_mot
         }
         int size;
         float *pos = this->arange(xi, xf, dr, size);
-        float dt = 1. / size;
+        float dt = 1000. / size;
         auto tpre = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
         for (int i = 0; i < size; i++)
