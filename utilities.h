@@ -102,7 +102,7 @@ double cubic_decomp(double t, double t_td, double t_ap, double hip2calf_len){
     return hip2calf_len + y_ap + delta_y * (rho[0] + rho[1] * Tau + rho[2] * (Tau * Tau) + rho[3] * (Tau * Tau * Tau));
 }
 
-void safety_check(Vec3<double> pre_cond, Vec3<double> cur_cond, Actuator leg){
+void safety_check(Vec3<double> pre_cond, Vec3<double> cur_cond, Homing leg){
     Vec3<double> epsilon = {0.15, 0.15, 0.2};
     for (int i(0); i < 3; i++){
         if (std::abs(cur_cond[i] - pre_cond[i]) > epsilon[i]){

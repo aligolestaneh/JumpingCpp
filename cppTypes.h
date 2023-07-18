@@ -59,5 +59,4 @@ using Vec316 = Eigen::Matrix<T, 316, 1>;
 template <typename T>
 using DVec = typename Eigen::Matrix<T, Eigen::Dynamic, 1>;
 
-
 #endif

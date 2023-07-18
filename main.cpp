@@ -250,18 +250,20 @@ int main() {
 
     double t_first_cycle = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     double real_time_cycle = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - t_first_cycle;
-    Vec78<double> real_time_cycle_list;
-    Vec78<Vec3<float*>> data_cycle;
-    Vec78<bool> contact_list_cycle;
+    Vec316<double> real_time_cycle_list;
+    Vec316<Vec3<float*>> data_cycle;
+    Vec316<bool> contact_list_cycle;
 
     // Part1 lists
-    Vec78<double> q_hip_com_1, q_thigh_com_1, q_calf_com_1;
-    Vec78<double> q_hip_motor_1, q_thigh_motor_1, q_calf_motor_1;
-    Vec78<double> real_time_list_1;
+    Vec316<double> q_hip_com_1, q_thigh_com_1, q_calf_com_1;
+    Vec316<double> q_hip_motor_1, q_thigh_motor_1, q_calf_motor_1;
+    Vec316<double> real_time_list_1;
+    Vec316<double> real_time_list_3;
+    //real_time_list_3.
 
     //Part3 lists
-    Vec78<double> q_hip_com_3, q_thigh_com_3, q_calf_com_3;
-    Vec78<double> q_hip_motor_3, q_thigh_motor_3, q_calf_motor_3;
+    Vec316<double> q_hip_com_3, q_thigh_com_3, q_calf_com_3;
+    Vec316<double> q_hip_motor_3, q_thigh_motor_3, q_calf_motor_3;
 
     Control control(hardware, m1, m2, m3);
     /*
@@ -272,18 +274,20 @@ int main() {
     int num = 0;
     control.data_for_jump();
 
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     /* //////////////////////////////////
     /////////// START HOPPING ///////////
     ////////////////////////////////// */
     kp = 90;
     kd = 0.3;
-    dt = 0.005;
-    int first_check;
+    dt = 0.01;
+    int first_check, i_3;
 
     double robot_hip, robot_thigh, robot_calf;
     double robot_hip_vel, robot_thigh_vel, robot_calf_vel;
+    double real_time, t_des;
+    Vec3<double> q_td, qdot_td, qdot_des, q_des;
 
     while (counter <= 1)
     {
@@ -291,7 +295,8 @@ int main() {
         first_check = 0;
         std::chrono::steady_clock::time_point t_first = std::chrono::steady_clock::now();
 
-        for(int i(0); i < 78; i++){
+        int i;
+        for(i = 0; i < 78; i++){
             real_time_list_1[i] = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count();
 
             robot_hip = control.hip_d_robot[i];
@@ -358,14 +363,76 @@ int main() {
                 q_calf_motor_1[i] = rx[2][1];
 
                 num++;
-                double _dt = (std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count() - real_time_list_1[num - 1]);
+                double _dt = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count() - real_time_list_1[num - 1];
                 if(_dt > dt)
                     std::cout << "Loop is taking more time than expected -> " << dt << "\n";
                 while((std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count() - real_time_list_1[num - 1]) < dt)
                     int temp = 0;
             }
         }
-        std::cout << counter;
+        
+        /*
+        TOUCHDOWN MOMENT
+        */
+        std::this_thread::sleep_for(std::chrono::milliseconds(180));        //Time in flight mode
+        rx[0] = leg.command(m1, rx[0][1], 0, 30, 0.5, 0);
+        rx[1] = leg.command(m2, rx[1][1], 0, 30, 0.5, 0);
+        rx[2] = leg.command(m3, rx[2][1], 0, 30, 0.5, 0);
+
+        t_first = std::chrono::steady_clock::now();
+        real_time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count();
+        t_des = real_time + 0.3;
+
+        q_td = {rx[0][1], rx[1][1] , rx[2][1]};                             //q touch down given from last phase
+        qdot_td = rbdl2robot_vel(0.032, 1.2014, -1.819);
+
+        i_3 = 0;                                                            //Counter for phase 3 loop
+        q_hip_motor_3[i_3] = rx[0][1];
+        q_thigh_motor_3[i_3] = rx[1][1];
+        q_calf_motor_3[i_3] = rx[2][1];
+        dt = 0.0025;
+        kp = 90;
+        kd = 0.3;
+
+        q_des = rbdl2robot(0.032, 1.2014, -1.819, q_home);
+        qdot_des = {0, 0, 0};
+        Cubic td_to_slip(real_time, t_des, q_td, qdot_td, q_des, qdot_des);
+
+        i++;
+
+        while(real_time <= t_des){
+            real_time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count();
+            real_time_list_3[i_3] = real_time;
+            q_des = td_to_slip.answer(real_time);
+
+            rx[0] = leg.command(m1, q_des[0], 0, kp, kd, 0);
+            rx[1] = leg.command(m2, q_des[1], 0, kp, kd, 0);
+            rx[2] = leg.command(m3, q_des[2], 0, kp, kd, 0);
+
+            //real_time_cycle_list[i] = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - real_time_cycle).count();
+            data_cycle[i] = {rx[0], rx[1], rx[2]};
+
+            i++;
+            data_counter++;
+
+            q_hip_com_3[i_3] = q_des[0];
+            q_thigh_com_3[i_3] = q_des[1];
+            q_calf_com_3[i_3] = q_des[2];
+
+            safety_check({q_hip_motor_3[i_3], q_thigh_motor_3[i_3], q_calf_motor_3[i_3]}, {rx[0][1], rx[1][1], rx[2][1]}, leg);
+
+            q_hip_motor_3[i_3 + 1] = rx[0][1];
+            q_thigh_motor_3[i_3 + 1] = rx[1][1];
+            q_calf_motor_3[i_3 + 1] = rx[2][1];
+
+            i_3++;
+
+            real_time = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_first).count();
+
+            if((real_time - real_time_list_3[i_3-1]) > dt)
+                std::cout << "Loop is taking more time than expected -> " << (real_time - real_time_list_3[i_3-1]) << '\n'; 
+        }
+
         counter++;
         data_counter++;
     }

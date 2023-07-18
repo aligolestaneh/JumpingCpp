@@ -18,6 +18,7 @@ from robot_class import ROBOT
 import RPi.GPIO as GPIO
 from hardware import hardware
 from control import Control
+from cubic import cubic
 # GPIO.setmode(GPIO.BOARD)
 # contact_pin = 13
 # GPIO.setup(contact_pin, GPIO.IN)
@@ -394,27 +395,28 @@ q_thigh_motor_1 = [None]*n
 q_calf_motor_1 = [None]*n
 real_time_list_1 = [None]*n
 ########################################### part3 lists
-q_hip_com_3 = [None]*n
-q_thigh_com_3 = [None]*n
-q_calf_com_3 = [None]*n
+q_hip_com_3 = [None]*2000
+q_thigh_com_3 = [None]*2000
+q_calf_com_3 = [None]*2000
 
-q_hip_motor_3 = [None]*n
-q_thigh_motor_3 = [None]*n
-q_calf_motor_3 = [None]*n
+q_hip_motor_3 = [None]*2000
+q_thigh_motor_3 = [None]*2000
+q_calf_motor_3 = [None]*2000
+real_time_list_3 = [None]*2000
 control = Control(hardware,m1,m2,m3)
 path =  "leg_RBDL.urdf"
 robot = ROBOT(np.zeros((3, 1)), np.zeros((3, 1)), path) #model
 data_counter = 0
 hip_com,thigh_com,calf_com,hip_com_vel,thigh_com_vel,calf_com_vel = control.data_for_jump()
 num = 0
-time.sleep(20)
+time.sleep(2)
 ############################################################START HOPPING
 while(counter<=1):
     kp = 90
     kd = 0.3
 
     time.sleep(0.1)
-    dt = 0.003
+    dt = 0.01
     #dt = 0.0025
 
     first_check = 0
@@ -514,67 +516,73 @@ while(counter<=1):
             
 
 #     #################################################################TOCHDOWN MOMENT
-#     time.sleep(0.18) ######################################## time in flight mode
-#     rx1 = leg.command(m1, rx1[1], 0, 30, 0.5, 0)
-#     rx2 = leg.command(m2, rx2[1], 0, 30, 0.5, 0)
-#     rx3 = leg.command(m3, rx3[1], 0, 30, 0.5, 0)
-# #     print("detect contact after while:", detect_contact())
-# #     print("real_time - t_td = ", real_time - t_td)
+    time.sleep(0.18) ######################################## time in flight mode
+    rx1 = leg.command(m1, rx1[1], 0, 30, 0.5, 0)
+    rx2 = leg.command(m2, rx2[1], 0, 30, 0.5, 0)
+    rx3 = leg.command(m3, rx3[1], 0, 30, 0.5, 0)
+#     print("detect contact after while:", detect_contact())
+#     print("real_time - t_td = ", real_time - t_td)
 
 #     # print("qdot_robot in touchdown: ", [rx1[2],rx2[2],rx3[2]])
 #     # print("qdot_rbdl in toucdown: ", robot2rbdl_vel(rx1[2],rx2[2],rx3[2]))
 
-#     t_first = time.time()
-#     real_time = time.time()- t_first 
-#     real_time_list_3 = []
-#     t_td = time.time()- t_first
-#     t_des = t_td + 0.3
+    t_first = time.time()
+    real_time = time.time()- t_first 
+    
+    t_td = time.time()- t_first
+    t_des = t_td + 0.3
             
-#     q_td = [rx1[1], rx2[1] , rx3[1]] ### q touch down given from last phase
+    q_td = [rx1[1], rx2[1] , rx3[1]] ### q touch down given from last phase
 
-#     qdot_td = [0.0805,5.044, -5.0757]#hard code estimate
-#     qdot_td = rbdl2robot_vel(qdot_td[0],qdot_td[1],qdot_td[2])
-#     i_3 = 0 ############################################################# counter for phase 3 loop
-#     q_hip_motor_3[i_3] = rx1[1]
-#     q_thigh_motor_3[i_3] = rx2[1]
-#     q_calf_motor_3[i_3] = rx3[1]
-#     dt = 0.0025
-#     kp=40
-#     kd=0.8
-#     td_to_slip = cubic(t_start=t_td, t_end=t_des, pos=q_td, vel=qdot_td, desired_pos=pose_d, desired_vel=qdot_des)
+    qdot_td = [0.0805,5.044, -5.0757]#hard code estimate
+    qdot_td = np.array(rbdl2robot_vel(qdot_td[0],qdot_td[1],qdot_td[2]))
+    i_3 = 0 ############################################################# counter for phase 3 loop
+    q_hip_motor_3[i_3] = rx1[1]
+    q_thigh_motor_3[i_3] = rx2[1]
+    q_calf_motor_3[i_3] = rx3[1]
+    dt = 0.0025
+    kp=90
+    kd=0.3
+    q_des = np.array(rbdl2robot(0.032,1.2014,-1.819))
+    qdot_des = np.array([0,0,0])
+    td_to_slip = cubic(t_start=t_td, t_end=t_des, pos=q_td, vel=qdot_td, desired_pos=q_des, desired_vel=qdot_des)
+    i += 1
 
-
-#     while(real_time <= t_des):
-#         real_time = time.time() - t_first
-#         real_time_list_3.append(real_time)
+    while(real_time <= t_des):
+        real_time = time.time() - t_first
+        real_time_list_3[i_3] = real_time
+#         print(i_3)
        
-#         q_des = td_to_slip.answer(real_time)
-#         # print(q_des)
+        q_des = td_to_slip.answer(real_time)
+#         print(q_des)
         
-#         rx1 = leg.command(m1, q_des[0], 0, kp, kd, 0)
-#         rx2 = leg.command(m2, q_des[1], 0, kp, kd, 0)
-#         rx3 = leg.command(m3, q_des[2], 0, kp, kd, 0)
+        rx1 = leg.command(m1, q_des[0], 0, kp, kd, 0)
+        rx2 = leg.command(m2, q_des[1], 0, kp, kd, 0)
+        rx3 = leg.command(m3, q_des[2], 0, kp, kd, 0)
+#         
+        real_time_cycle = time.time() - t_first_cycle
+        real_time_cycle_list[i] = real_time_cycle
+        data_cycle[i] = [rx1,rx2,rx3]
+        i += 1 
+        data_counter += 1
+#         contact_list_cycle.append(detect_contact())
+        q_hip_com_3[i_3] = q_des[0]
+        q_thigh_com_3[i_3] = q_des[1]
+        q_calf_com_3[i_3] = q_des[2]
         
-#         real_time_cycle = time.time() - t_first_cycle
-#         real_time_cycle_list[data_counter] = real_time_cycle
-#         data_cycle[data_counter] = [rx1,rx2,rx3]
-#         data_counter += 1
-# #         contact_list_cycle.append(detect_contact())
-#         q_hip_com_3[i_3] = q_des[0]
-#         q_thigh_com_3[i_3] = q_des[1]
-#         q_calf_com_3[i_3] = q_des[2]
    
-#         safety_check([q_hip_motor_3[-1],q_thigh_motor_3[-1],q_calf_motor_3[-1]],[rx1[1],rx2[1],rx3[1]])    
-
-#         q_hip_motor_3[i_3+1] = rx1[1]
-#         q_thigh_motor_3[i_3+1] = rx2[1]
-#         q_calf_motor_3[i_3+1] = rx3[1]
-        
+        safety_check([q_hip_motor_3[i_3],q_thigh_motor_3[i_3],q_calf_motor_3[i_3]],[rx1[1],rx2[1],rx3[1]])    
+# 
+        q_hip_motor_3[i_3+1] = rx1[1]
+        q_thigh_motor_3[i_3+1] = rx2[1]
+        q_calf_motor_3[i_3+1] = rx3[1]
+#         
 #         real_time = time.time() - t_first
-#         i_3 += 1
-#         if ((time.time()-t_first) - real_time_list_1[-1] > dt):
-#                 print("loop is taking more time than expected!!!",(time.time()-t_first) - real_time_list_1[-1])
-#     # print("this is the end of a jump")
+        i_3 += 1
+        real_time = time.time() - t_first
+        if ((time.time()-t_first) - real_time_list_3[i_3-1] > dt):
+                print("loop is taking more time than expected!!!",(time.time()-t_first) - real_time_list_3[i_3-1])
+    # print("this is the end of a jump")
 
 #     kp = 60
 #     kd = 0.9
@@ -582,12 +590,12 @@ while(counter<=1):
 #     rx1 = leg.command(m1, q_slip[0], 0, kp, kd, 0)
 #     rx2 = leg.command(m2, q_slip[1], 0, kp, kd, 0)
 #     rx3 = leg.command(m3, q_slip[2], 0, kp, kd, 0)
-   
+#    
 #     real_time_cycle = time.time() - t_first_cycle
 #     real_time_cycle_list[data_counter] = real_time_cycle
 #     data_cycle[data_counter] = [rx1,rx2,rx3]
 # #     contact_list_cycle.append(detect_contact())
-
+# 
 #     rx1 = leg.command(m1, q_slip[0], 0, kp, kd, 0)
 #     rx2 = leg.command(m2, q_slip[1], 0, kp, kd, 0)
 #     rx3 = leg.command(m3, q_slip[2], 0, kp, kd, 0)
@@ -616,7 +624,24 @@ plt.figure()
 plt.plot(q_calf_com_1,"--")
 plt.plot(q_calf_motor_1)
 plt.title("CALF")
+# plt.show()
+
+plt.figure()
+plt.plot(q_hip_com_3,"--")
+plt.plot(q_hip_motor_3)
+plt.title("HIP IN COMP")
+
+plt.figure()
+plt.plot(q_thigh_com_3,"--")
+plt.plot(q_thigh_motor_3)
+plt.title("THIGH IN COMP")
+
+plt.figure()
+plt.plot(q_calf_com_3,"--")
+plt.plot(q_calf_motor_3, "--")
+plt.title("CALF IN COMP")
 plt.show()
+
 # plots = Graphics()
 # plots.phase_one(q_hip_com_1,q_thigh_com_1,q_calf_com_1,q_hip_motor_1,q_thigh_motor_1,q_calf_motor_1)
 # 
