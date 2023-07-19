@@ -55,6 +55,10 @@ using Vec78 = Eigen::Matrix<T, 78, 1>;
 template <typename T>
 using Vec316 = Eigen::Matrix<T, 316, 1>;
 
+// 316x1 vector
+template <typename T>
+using Vec316 = Eigen::Matrix<T, 316, 1>;
+
 // Dynamically sized vector
 template <typename T>
 using DVec = typename Eigen::Matrix<T, Eigen::Dynamic, 1>;

@@ -33,7 +33,7 @@ class Hardware{
 
     Vec3<double> rbdl2robot_vel(double v1, double v2, double v3){
         Vec3<double> rx_dot = {v1, v2, v3}, diff = {0., 0., 0.,};
-        return fixq3(diff - rx_dot);
+        return fixq3inv(diff - rx_dot);
     }
 
         private:

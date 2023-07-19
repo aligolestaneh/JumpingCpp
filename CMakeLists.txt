@@ -13,8 +13,8 @@ find_package(Eigen3 REQUIRED)
 # include_directories("/usr/include/yaml-cpp")
 
 include_directories("/usr/include/")
-include_directories("/usr/local/include/eigen3/")
-# include_directories("/usr/include/eigen3/")		//for raspberry
+# include_directories("/usr/local/include/eigen3/")
+include_directories("/usr/include/eigen3/")
 
 
 add_library(extract_data SHARED extract_data.h extract_data.cpp)

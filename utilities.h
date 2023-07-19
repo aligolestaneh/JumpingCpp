@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "cppTypes.h"
-#include "GPIO.h"
+//#include "GPIO.h"
 #include "actuator.h"
 
 #define CONTACT_PIN 13
@@ -73,7 +73,7 @@ double cubic_comp(double t, double t_lo, double t_ap, double hip2calf_len){
     if (Tau > 1)
         throw std::runtime_error("[ERROR]: Tau > 1 in COMP");
     /*!
-    * @param y_ap : The height we want to descend in flight mode 
+    * @param y_ap : The height we want to descend in flight mode
     */
     double y_ap = 0.01, y_lo = 0, ydot_lo = 0, ydot_ap = 0, delta_y = y_ap - y_lo;
     Vec4<double> rho = {0.,
@@ -92,7 +92,7 @@ double cubic_decomp(double t, double t_td, double t_ap, double hip2calf_len){
     if (Tau > 1)
         throw std::runtime_error("[ERROR]: Tau > 1 in DECOMP");
     /*!
-    * @param y_td : The height we want to descend in flight mode 
+    * @param y_td : The height we want to descend in flight mode
     */
     double y_ap = 0., y_td = -0.1, ydot_td = 0, ydot_ap = 0, delta_y = y_td - y_ap;
     Vec4<double> rho = {0.,
@@ -103,7 +103,7 @@ double cubic_decomp(double t, double t_td, double t_ap, double hip2calf_len){
 }
 
 void safety_check(Vec3<double> pre_cond, Vec3<double> cur_cond, Homing leg){
-    Vec3<double> epsilon = {0.15, 0.15, 0.2};
+    Vec3<double> epsilon = {0.15, 0.171, 0.2};
     for (int i(0); i < 3; i++){
         if (std::abs(cur_cond[i] - pre_cond[i]) > epsilon[i]){
             std::cout << "Motor" << (i+1) << "diff: " << cur_cond[0] - pre_cond[0] << std::endl;
