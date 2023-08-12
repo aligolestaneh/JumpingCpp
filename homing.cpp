@@ -121,7 +121,7 @@ float *Homing::start(int m1, int m2, int m3, float kp, float kd, bool enable_mot
     rx3 = this->command(m3, 0, 0, 0, 0, tau3_home);
     float m3_home = rx3[1];
 
-    if (m3_home > -0.1 || m3_home < -0.2) // safety check for calf actuator
+    if (m3_home > -0.4 || m3_home < -0.6) // safety check for calf actuator
     {
         rx1 = this->command(m1, 0, 0, 0, 0, 0);
         rx2 = this->command(m2, 0, 0, 0, 0, 0);

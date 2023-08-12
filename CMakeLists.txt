@@ -16,19 +16,22 @@ include_directories("/usr/include/")
 # include_directories("/usr/local/include/eigen3/")
 include_directories("/usr/include/eigen3/")
 
-
 add_library(extract_data SHARED extract_data.h extract_data.cpp)
 add_library(control SHARED control.h control.cpp)
 add_library(actuator SHARED actuator.h actuator.cpp)
 add_library(homing SHARED homing.h homing.cpp)
 # add_library(utilities SHARED utilities.h)
-# add_library(GPIO SHARED /usr/include/GPIO.h)
+add_library(GPIO SHARED GPIO/GPIO.h GPIO/GPIO.cpp)
+# add_library(wiringPi SHARED /usr/include/wiringPi.h /usr/include/wiringPi.cpp)
+find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
 
 # target_link_libraries(utilities GPIO)
-target_link_libraries(homing actuator)
+target_link_libraries(homing actuator GPIO)
 
 add_executable(main main.cpp)
-target_link_libraries(main homing extract_data control)
+add_executable(loggingforhome LoggingForHome.cpp)
+target_link_libraries(loggingforhome homing ${WIRINGPI_LIBRARIES})
+target_link_libraries(main homing extract_data control ${WIRINGPI_LIBRARIES})
 
 # Create the main executable
 

@@ -4,10 +4,10 @@
 #include <iostream>
 
 #include "cppTypes.h"
-//#include "GPIO.h"
 #include "actuator.h"
+#include "GPIO.h"
 
-#define CONTACT_PIN 13
+#define PIN_NUMBER 0
 #define m1 0x06
 #define m2 0x04
 #define m3 0x05
@@ -119,6 +119,34 @@ void safety_check(Vec3<double> pre_cond, Vec3<double> cur_cond, Homing leg){
         }
     }
 }
+
+//int test_gpio(){
+//    std::cout << "GPIO library example: Writing a GPIO pin\n";
+//
+//	int status; //Create a status variable
+//
+//	GPIO gpio_test(GPIO_PIN); //Create a GPIO object
+//
+//	status = gpio_test.setupPin(1); //Create pin
+//	if (status != 0) return 1; //Return error code
+//
+//	status = gpio_test.setDirection(1); //Set pin direction
+//	if (status != 0) return 1; //Return error code
+//
+//	std::cout << "Wrote GPIO pin " << GPIO_PIN << " HIGH\n";
+//	status = gpio_test.writeValue(1); //Set pin value
+//	if (status != 0) return 1; //Return error code
+//
+//	sleep(5); //Wait five seconds
+//
+//	std::cout << "Wrote GPIO pin " << GPIO_PIN << " LOW\n";
+//	status = gpio_test.writeValue(0); //Set pin value
+//	if (status != 0) return 1; //Return error code
+//
+//	status = gpio_test.setupPin(0); //Create pin
+//	if (status != 0) return 1; //Return error code
+//    std::cout << "GPIO Done!\n";
+//}
 
 
 #endif
