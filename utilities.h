@@ -7,7 +7,8 @@
 #include "actuator.h"
 #include "GPIO.h"
 
-#define PIN_NUMBER 0
+#define PIN_IMU 17
+#define PIN_CONTACT 18
 #define m1 0x06
 #define m2 0x04
 #define m3 0x05

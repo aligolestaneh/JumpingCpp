@@ -49,8 +49,9 @@ int main() {
 //    status = sync_pin.setupPin(1);
 //    status = sync_pin.setDirection(1);
 
-    wiringPiSetup();
-    pinMode(PIN_NUMBER, OUTPUT);
+    wiringPiSetupGpio();
+    pinMode(PIN_IMU, OUTPUT);
+    pinMode(PIN_CONTACT, INPUT);
 
     Homing leg("can0");        //Real Robot
     leg.enable(m1);
@@ -292,7 +293,7 @@ int main() {
     kd = 0.3;
     dt = 0.0025;
     int first_check, i_3;
-    int n_counter = 4;
+    int n_counter = 5;
 //    double robot_hip, robot_thigh, robot_calf;
 //    double robot_hip_vel, robot_thigh_vel, robot_calf_vel;
     double real_time_1, real_time_2, t_des;
@@ -309,6 +310,7 @@ int main() {
 
         Vec500<Vec3<float*>> data_cycle;
         Vec500<double> d_times;
+        Vec500<int> contact_data;
 
         //std::this_thread::sleep_for(std::chrono::milliseconds(100));
         first_check = 0;
@@ -362,7 +364,7 @@ int main() {
                 throw std::runtime_error("Your command position is not in the safe range!!!!!!!!!");
             } else {
                     if (flag_first){
-                        digitalWrite(PIN_NUMBER, 1);
+                        digitalWrite(PIN_IMU, 1);
                         t_origin = std::chrono::steady_clock::now();
                         flag_first = false;
                     }
@@ -373,7 +375,7 @@ int main() {
                     real_time_cycle_list[i] = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - t_first_cycle;
                     data_cycle[i] = {rx[0], rx[1], rx[2]};
                     d_times[i] = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_origin).count();
-                  //contact_list_cycle[i] = detect_contact();
+                    contact_data[i] = digitalRead(PIN_CONTACT);
 
                     q_hip_com_1[i] = robot_hip;
                     q_thigh_com_1[i] = robot_thigh;
@@ -417,6 +419,7 @@ int main() {
             rx[2] = leg.command(m3, rx[2][1], 0, 30, 0.5, 0);
             data_cycle[i] = {rx[0], rx[1], rx[2]};
             d_times[i] = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_origin).count();
+            contact_data[i] = digitalRead(PIN_CONTACT);
             i++;
             //std::cout << i << '\n';
             while(std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_iter).count() < dt)
@@ -457,7 +460,7 @@ int main() {
             //real_time_cycle_list[i] = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - real_time_cycle).count();
             data_cycle[i] = {rx[0], rx[1], rx[2]};
             d_times[i] = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - t_origin).count();
-            //std::cout << i << "\n";
+            contact_data[i] = digitalRead(PIN_CONTACT);
             i++;
             data_counter++;
 
@@ -483,7 +486,7 @@ int main() {
         }
 
         if (counter == n_counter)
-            digitalWrite(PIN_NUMBER, 0);
+            digitalWrite(PIN_IMU, 0);
 
         leg.command(m1, q_des[0], 0, 90, 0.3, 0);
         leg.command(m2, q_des[1], 0, 90, 0.3, 0);
@@ -497,7 +500,7 @@ int main() {
         dataset << data_cycle[j][0][0] << " " << data_cycle[j][0][1] << " " << data_cycle[j][0][2] << " " << data_cycle[j][0][3] << " "
                 << data_cycle[j][1][0] << " " << data_cycle[j][1][1] << " " << data_cycle[j][1][2] << " " << data_cycle[j][1][3] << " "
                 << data_cycle[j][2][0] << " " << data_cycle[j][2][1] << " " << data_cycle[j][2][2] << " " << data_cycle[j][2][3] << " "
-                << d_times[j] << std::endl;
+                << contact_data[j] << " " << d_times[j] << std::endl;
         }
 
         counter++;
